@@ -310,15 +310,16 @@ thymol = function() {
             var htmlTagAttrs = $("html")[0].attributes, tp = null, tu, nsspec;
             $([ thymol.thURL, thymol.thAltURL ]).each(function() {
                 tu = this;
-                $(htmlTagAttrs).each(function() {
-                    if (this.value == tu) {
-                        nsspec = this.localName.split(":");
+                for (var k = 0; k < htmlTagAttrs.length; k++) {
+                    var attr = htmlTagAttrs.item(k);
+                    if (attr.value == tu) {
+                        nsspec = attr.localName.split(":");
                         if (nsspec.length > 0) {
                             tp = nsspec[nsspec.length - 1];
                             return false;
                         }
                     }
-                });
+                }
                 if (tp) {
                     thymol.updatePrefix(tp);
                     return false;
@@ -1122,10 +1123,10 @@ thymol = function() {
                 }
                 var removeArray = $(thymol.thRemove.escpName, rootNode);
                 removeArray = removeArray.add($(thymol.thRemove.escpSynonym, rootNode));
-                for (i = 0, iLimit = removeArray.length; i < iLimit; i++) {
+                for (var i = 0, iLimit = removeArray.length; i < iLimit; i++) {
                     var rmElement = removeArray[i];
-                    for (j = 0, jLimit = rmElement.attributes.length; j < jLimit; j++) {
-                        var attr = rmElement.attributes[j];
+                    for (var j = 0, jLimit = rmElement.attributes.length; j < jLimit; j++) {
+                        var attr = rmElement.attributes.item(j);
                         if (thymol.thRemove.name == attr.localName || thymol.thRemove.synonym == attr.localName) {
                             thymol.processRemove(rmElement, attr);
                             break;
@@ -1161,12 +1162,13 @@ thymol = function() {
                         break;
                     }
                 }
+                // domino attributes!
                 var allAttributes = elem1.attributes;
                 if (allAttributes && allAttributes.length > 0) {
                     var attributes = [], aii = 0;
                     if (!thymol.thUsingNullPrefix) {
                         for (i = 0, iLimit = allAttributes.length; i < iLimit; i++) {
-                            var ai = allAttributes[i];
+                            var ai = allAttributes.item(i);
                             if (ai) {
                                 for (j = 0, jLimit = thymol.thThymeleafPrefixList.length; j < jLimit; j++) {
                                     var attrName = ai.name.toString();
@@ -1598,7 +1600,7 @@ thymol = function() {
                 for (i = 0, iLimit = fragArray.length; i < iLimit; i++) {
                     fragment = fragArray[i];
                     for (j = 0, jLimit = fragment.attributes.length; j < jLimit; j++) {
-                        matched = Thymol.prototype.matchAndSetArgsList(element, fragment.attributes[j], argsCount, fragmentName, fragmentPart);
+                        matched = Thymol.prototype.matchAndSetArgsList(element, fragment.attributes.item(j), argsCount, fragmentName, fragmentPart);
                         if (matched) {
                             break;
                         }
@@ -5025,8 +5027,9 @@ thymol.ThParser = function(scope) {
         thCaseSpecs.each(function() {
             caseClause = this;
             remove = true;
-            $(caseClause.attributes).each(function() {
-                ccAttr = this;
+            var j;
+            for (j = 0; j < caseClause.length; j++) {
+                ccAttr = caseClause.item(j);
                 if (thCase.name == ccAttr.name || thCase.synonym == ccAttr.name) {
                     if (!matched) {
                         matched = thymol.processCase(element, ccAttr, val);
@@ -5036,7 +5039,7 @@ thymol.ThParser = function(scope) {
                     }
                     caseClause.removeAttribute(ccAttr.name);
                 }
-            });
+            }
             if (remove) {
                 element.removeChild(caseClause);
                 updated = true;
